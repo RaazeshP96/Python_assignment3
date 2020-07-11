@@ -5,10 +5,6 @@ Dijkstra’s Algorithm
 '''
 
 
-# Python program for Dijkstra's single
-# source shortest path algorithm. The program is
-# for adjacency matrix representation of the graph
-
 # Library for INT_MAX
 import sys
 
@@ -51,7 +47,7 @@ class Graph():
         dist[src] = 0
         sptSet = [False] * self.V
 
-        for cout in range(self.V):
+        for _ in range(self.V):
 
             # Pick the minimum distance vertex from
             # the set of vertices not yet processed.
@@ -75,7 +71,6 @@ class Graph():
         self.printSolution(dist)
 
 
-# Driver program
 g = Graph(9)
 g.graph = [[0, 4, 0, 0, 0, 0, 0, 8, 0],
            [4, 0, 8, 0, 0, 0, 0, 11, 0],
@@ -89,5 +84,3 @@ g.graph = [[0, 4, 0, 0, 0, 0, 0, 8, 0],
            ]
 
 g.dijkstra(0)
-
-# This code is contributed by Divyanshu Mehta
