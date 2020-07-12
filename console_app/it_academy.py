@@ -60,10 +60,27 @@ class Student:
                 {'name': self.name, 'course': self.course, 'paid': self.paid, "unpaid": self.unpaid})
 
     def student_delete(self):
-        pass
+        with open('student.csv', "w", newline='') as writefile:
+            field_names = ['name', 'course', 'paid', 'unpaid']
+            writer = csv.DictWriter(writefile, fieldnames=field_names)
+            with open('student.csv', 'r', newline='') as readfile:
+                read = csv.DictReader(readfile)
+                for row in read:
+                    if row.get('name') != self.name:
+                        writer.writerow(row)
 
     def student_update(self):
-        pass
+        with open('student.csv', "w", newline='') as writefile:
+            field_names = ['name', 'course', 'paid', 'unpaid']
+            writer = csv.DictWriter(writefile, fieldnames=field_names)
+            with open('student.csv', 'r', newline='') as readfile:
+                read = csv.DictReader(readfile)
+                for row in read:
+                    if row.get('name') != self.name:
+                        writer.writerow(row)
+                    else:
+                        writer.writerow(
+                            {'name': self.name, 'course': self.course, 'paid': self.paid, "unpaid": self.unpaid})
 
     def student_read(self):
         with open('student.csv', 'r', newline='') as stdfile:
@@ -89,3 +106,16 @@ if enroll == 'y':
     unpaid = 20000-paid
     s1 = Student(name, course, paid, unpaid)
     s1.student_write()
+    print('-'*30)
+    print("You are enrolled!!!")
+    print('-'*30)
+    s1.student_read()
+
+
+# deletion of student
+# s2=Student('rita',"js",'10000','10000')
+# s2.student_delete()
+
+# update of student
+# s2=Student('rita',"js",'10000','10000')
+# s2.student_update()
