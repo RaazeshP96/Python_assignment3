@@ -79,9 +79,9 @@ class Student:
             writer.writerow(data)
 
     def student_delete(self, name):
-        with open('student.csv', "w", newline='') as writefile:
+        with open('students.csv', "w", newline='') as writefile:
             writer = csv.DictWriter(writefile, fieldnames=self.field_names)
-            with open('student.csv', 'r', newline='') as readfile:
+            with open('students.csv', 'r', newline='') as readfile:
                 read = csv.DictReader(readfile)
                 for row in read:
                     if row.get('name') != name:
@@ -89,7 +89,7 @@ class Student:
 
     def student_update(self, name):
         with open('students.csv', 'r') as std_file:
-            readdata = dict(csv.DictReader(std_file))
+            readdata = csv.DictReader(csv.DictReader(std_file))
             with open('students.csv', 'w') as std_file:
                 writer = csv.DictWriter(
                     std_file, fieldnames=self.field_names)
@@ -120,8 +120,8 @@ class Student:
                     writer.writerow(row)
 
     def student_read(self):
-        with open('student.csv', 'r', newline='') as stdfile:
-            read = csv.DictReader(stdfile)
+        with open('students.csv', 'r', newline='') as std_file:
+            read = csv.DictReader(std_file)
             for row in read:
                 print(row)
 
@@ -149,13 +149,11 @@ class Academy(Course, Student):
             self.new_student()
 
         elif (itemnum == 2):
-            input_data = input(
-                "Enter the name of student you want to see details of:")
             self.student_read()
 
         elif (itemnum == 3):
             input_data = input(
-                "Enter the name of student you want to update:")
+                "Enter the name of student you want to update:").lower()
             self.student_update(input_data)
 
         elif (itemnum == 4):
