@@ -21,10 +21,11 @@ access all the features. Develop the app with OOP Approach.
 
 '''
 import csv
+import os
 
 
 class Course:
-    def course_write(self):
+    def __init__(self):
         with open('courses.csv', 'w', newline='') as file:
             field_names = ['courseid', 'course', 'time(hrs)']
             writer = csv.DictWriter(file, fieldnames=field_names)
@@ -41,46 +42,82 @@ class Course:
         with open('courses.csv', 'r', newline='') as file:
             read = csv.DictReader(file)
             for row in read:
-                print(row.get('course'))
+                print(f"{row.get('courseid')} {row.get('course')}")
 
 
 class Student:
-    def __init__(self, name, course, paid, unpaid):
-        self.name = name
-        self.course = course
-        self.paid = paid
-        self.unpaid = unpaid
+    def __init__(self):
+        self.field_names = ["name", "course", "deposit_status",
+                            "deposit_amount_remaining", "paid_amount"]
 
-    def student_write(self):
-        with open('student.csv', "w", newline='') as file:
-            field_names = ['name', 'course', 'paid', 'unpaid']
-            writer = csv.DictWriter(file, fieldnames=field_names)
+    def new_student(self):
+        name = input("Enter name:").lower()
+        c1 = Course()
+        c1.course_read()
+        course = input("Enter a course name from above list:")
+        print("Do you want to pay the full deposit of 20000 or 2 installment of 10000(Select 1 or 2):")
+        print("1. Full deposit")
+        print("2. 2 Installment of 1000")
+        entry = int(input())
+        if (entry == 2):
+            deposit_status = "paid"
+            amount_remaining = 0
+            paid_amount = 20000
+
+        elif (entry == 1):
+            deposit_status = "half installment left"
+            amount_remaining = 20000 - 10000
+            paid_amount = 10000
+
+        data = {"name": name, "course": course, "deposit_status": deposit_status,
+                "deposit_amount_remaining": amount_remaining, "paid_amount": paid_amount}
+
+        with open('students.csv', 'w+', newline='') as std_file:
+            writer = csv.DictWriter(
+                std_file, fieldnames=self.field_names)
             writer.writeheader()
-            writer.writerow(
-                {'name': self.name, 'course': self.course, 'paid': self.paid, "unpaid": self.unpaid})
+            writer.writerow(data)
 
-    def student_delete(self):
+    def student_delete(self, name):
         with open('student.csv', "w", newline='') as writefile:
-            field_names = ['name', 'course', 'paid', 'unpaid']
-            writer = csv.DictWriter(writefile, fieldnames=field_names)
+            writer = csv.DictWriter(writefile, fieldnames=self.field_names)
             with open('student.csv', 'r', newline='') as readfile:
                 read = csv.DictReader(readfile)
                 for row in read:
-                    if row.get('name') != self.name:
+                    if row.get('name') != name:
                         writer.writerow(row)
 
-    def student_update(self):
-        with open('student.csv', "w", newline='') as writefile:
-            field_names = ['name', 'course', 'paid', 'unpaid']
-            writer = csv.DictWriter(writefile, fieldnames=field_names)
-            with open('student.csv', 'r', newline='') as readfile:
-                read = csv.DictReader(readfile)
-                for row in read:
-                    if row.get('name') != self.name:
-                        writer.writerow(row)
-                    else:
-                        writer.writerow(
-                            {'name': self.name, 'course': self.course, 'paid': self.paid, "unpaid": self.unpaid})
+    def student_update(self, name):
+        with open('students.csv', 'r') as std_file:
+            readdata = dict(csv.DictReader(std_file))
+            with open('students.csv', 'w') as std_file:
+                writer = csv.DictWriter(
+                    std_file, fieldnames=self.field_names)
+                writer.writeheader()
+                for row in readdata:
+                    if (row.get('name') == name):
+                        print("Update the info")
+                        print('-'*30)
+                        row['name'] = input("Enter the new name:").lower()
+                        c1 = Course()
+                        c1.course_read()
+                        row['course'] = input(
+                            "Enter a course name from above list:")
+                        print(
+                            "Do you want to pay the full deposit of 20000 or 2 installment of 10000(Select 1 or 2):")
+                        print("1. Full deposit")
+                        print("2. 2 Installment of 1000")
+                        entry = int(input())
+                        if (entry == 2):
+                            row['deposit_status'] = "paid"
+                            row['amount_remaining'] = 0
+                            row['paid_amount'] = 20000
+
+                        elif (entry == 1):
+                            row['deposit_status'] = "half installment left"
+                            row['amount_remaining'] = 20000 - 10000
+                            row['paid_amount'] = 10000
+                    writer.writerow(row)
 
     def student_read(self):
         with open('student.csv', 'r', newline='') as stdfile:
@@ -92,30 +129,43 @@ class Student:
 # main
 
 # for student registration
-c1 = Course()
-c1.course_write()
-name = input("Enter the name:")
-print('-'*30)
-print("our available courses")
-c1.course_read()
-print('-'*30)
-enroll = (input("Do you want to enroll (y/n):")).lower()
-if enroll == 'y':
-    course = (input("Enter the course you want to enroll:")).lower()
-    paid = int(input("Diposite 10000 or 20000:"))
-    unpaid = 20000-paid
-    s1 = Student(name, course, paid, unpaid)
-    s1.student_write()
-    print('-'*30)
-    print("You are enrolled!!!")
-    print('-'*30)
-    s1.student_read()
+class Academy(Course, Student):
+    def __init__(self):
+        Course.__init__(self)
+        Student.__init__(self)
+
+    def menu(self):
+        print("Our Menu")
+        print('-'*30)
+        print("1. New Student Registration")
+        print("2. View All Student")
+        print("3. Update student info")
+        print("4. Delete Student")
+
+        itemnum = int(
+            input("Please enter the number of menu item you want to access:"))
+
+        if (itemnum == 1):
+            self.new_student()
+
+        elif (itemnum == 2):
+            input_data = input(
+                "Enter the name of student you want to see details of:")
+            self.student_read()
+
+        elif (itemnum == 3):
+            input_data = input(
+                "Enter the name of student you want to update:")
+            self.student_update(input_data)
+
+        elif (itemnum == 4):
+            input_data = input(
+                "Enter the name of student to you want to delete:")
+            self.student_delete(input_data)
+
+        else:
+            print("Invalid input")
 
 
-# deletion of student
-# s2=Student('rita',"js",'10000','10000')
-# s2.student_delete()
-
-# update of student
-# s2=Student('rita',"js",'10000','10000')
-# s2.student_update()
+obj1 = Academy()
+obj1.menu()
