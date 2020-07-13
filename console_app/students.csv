@@ -1,2 +1,4 @@
 name,course,deposit_status,deposit_amount_remaining,paid_amount
-rina,js,half installment left,10000,10000
+ram,js,paid,0,20000
+hari,htmlcss,half installment left,10000,10000
+gita,python,half installment left,10000,10000

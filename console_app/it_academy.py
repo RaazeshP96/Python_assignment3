@@ -21,7 +21,8 @@ access all the features. Develop the app with OOP Approach.
 
 '''
 import csv
-import os
+import shutil
+from tempfile import NamedTemporaryFile
 
 
 class Course:
@@ -50,10 +51,17 @@ class Student:
         self.field_names = ["name", "course", "deposit_status",
                             "deposit_amount_remaining", "paid_amount"]
 
+    def len_list(self):
+        with open('students.csv', 'r', newline='') as std_file:
+            read = csv.DictReader(std_file)
+            reader_list = list(read)
+            return len(reader_list)
+
     def new_student(self):
         name = input("Enter name:").lower()
         c1 = Course()
         c1.course_read()
+        length = self.len_list()
         course = input("Enter a course name from above list:")
         print("Do you want to pay the full deposit of 20000 or 2 installment of 10000(Select 1 or 2):")
         print("1. Full deposit")
@@ -72,10 +80,11 @@ class Student:
         data = {"name": name, "course": course, "deposit_status": deposit_status,
                 "deposit_amount_remaining": amount_remaining, "paid_amount": paid_amount}
 
-        with open('students.csv', 'w+', newline='') as std_file:
+        with open('students.csv', 'a+', newline='') as std_file:
             writer = csv.DictWriter(
                 std_file, fieldnames=self.field_names)
-            writer.writeheader()
+            if length == 0:
+                writer.writeheader()
             writer.writerow(data)
 
     def student_delete(self, name):
@@ -85,39 +94,40 @@ class Student:
                 read = csv.DictReader(readfile)
                 for row in read:
                     if row.get('name') != name:
+                        writer.writeheader()
                         writer.writerow(row)
 
     def student_update(self, name):
-        with open('students.csv', 'r') as std_file:
+        temp_file = NamedTemporaryFile(delete=False)
+        with open('students.csv', 'r') as std_file,  open('students.csv', 'a') as temp_file:
             readdata = csv.DictReader(csv.DictReader(std_file))
-            with open('students.csv', 'w') as std_file:
-                writer = csv.DictWriter(
-                    std_file, fieldnames=self.field_names)
-                writer.writeheader()
-                for row in readdata:
-                    if (row.get('name') == name):
-                        print("Update the info")
-                        print('-'*30)
-                        row['name'] = input("Enter the new name:").lower()
-                        c1 = Course()
-                        c1.course_read()
-                        row['course'] = input(
-                            "Enter a course name from above list:")
-                        print(
-                            "Do you want to pay the full deposit of 20000 or 2 installment of 10000(Select 1 or 2):")
-                        print("1. Full deposit")
-                        print("2. 2 Installment of 1000")
-                        entry = int(input())
-                        if (entry == 2):
-                            row['deposit_status'] = "paid"
-                            row['amount_remaining'] = 0
-                            row['paid_amount'] = 20000
+            writer = csv.DictWriter(
+                temp_file, fieldnames=self.field_names)
+            for row in readdata:
+                if row['name'] == name:
+                    print("Update the info")
+                    print('-'*30)
+                    row['name'] = input("Enter the new name:").lower()
+                    c1 = Course()
+                    c1.course_read()
+                    row['course'] = input(
+                        "Enter a course name from above list:")
+                    print(
+                        "Do you want to pay the full deposit of 20000 or 2 installment of 10000(Select 1 or 2):")
+                    print("1. Full deposit")
+                    print("2. 2 Installment of 1000")
+                    entry = int(input())
+                    if (entry == 2):
+                        row['deposit_status'] = "paid"
+                        row['amount_remaining'] = 0
+                        row['paid_amount'] = 20000
 
-                        elif (entry == 1):
-                            row['deposit_status'] = "half installment left"
-                            row['amount_remaining'] = 20000 - 10000
-                            row['paid_amount'] = 10000
-                    writer.writerow(row)
+                    elif (entry == 1):
+                        row['deposit_status'] = "half installment left"
+                        row['amount_remaining'] = 10000
+                        row['paid_amount'] = 10000
+                writer.writerow(row)
+        shutil.move('temp_file.name', 'students.csv')
 
     def student_read(self):
         with open('students.csv', 'r', newline='') as std_file:
