@@ -59,12 +59,12 @@ class Student:
         print("1. Full deposit")
         print("2. 2 Installment of 1000")
         entry = int(input())
-        if (entry == 2):
+        if (entry == 1):
             deposit_status = "paid"
             amount_remaining = 0
             paid_amount = 20000
 
-        elif (entry == 1):
+        elif (entry == 2):
             deposit_status = "half installment left"
             amount_remaining = 20000 - 10000
             paid_amount = 10000
